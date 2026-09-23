@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://najibulloh.tj/sitemap.xml
+Sitemap: https://najibullo-portfolio.onrender.com/sitemap.xml

@@ -3,6 +3,7 @@
   const analytics = cfg.analytics || {};
   const respectDNT = navigator.doNotTrack === "1" || window.doNotTrack === "1";
   const enabled = !respectDNT && Boolean(analytics.cloudflareBeaconToken || analytics.ga4Id || analytics.endpoint);
+  const persistVitalsLocally = analytics.persistVitalsLocally !== false;
 
   const safeSend = (payload) => {
     if (!enabled) return;
@@ -25,7 +26,7 @@
   window.trackPortfolioEvent = (name, detail={}) => safeSend({
     name,
     ...detail,
-    path: location.pathname,
+    path: location.pathname + location.search,
     lang: document.documentElement.lang || "en",
     ts: Date.now()
   });
@@ -44,15 +45,22 @@
     g.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(analytics.ga4Id)}`;
     document.head.appendChild(g);
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function(){ dataLayer.push(arguments); };
-    gtag("js", new Date());
-    gtag("config", analytics.ga4Id, {anonymize_ip:true});
+    window.gtag = function(){ window.dataLayer?.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", analytics.ga4Id, {anonymize_ip:true});
   }
 
   const vitals = {};
+  const publishVitals = () => { window.PORTFOLIO_METRICS = Object.freeze({...vitals}); };
   const emitVitals = () => {
     if (!Object.keys(vitals).length) return;
-    safeSend({name:"web_vitals", ...vitals, path:location.pathname, lang:document.documentElement.lang || "en", ts:Date.now()});
+    const snapshot = {name:"web_vitals", ...vitals, path:location.pathname, lang:document.documentElement.lang || "en", ts:Date.now()};
+    window.PORTFOLIO_METRICS = Object.freeze({...vitals});
+    if (persistVitalsLocally) {
+      try { sessionStorage.setItem('portfolio:last-vitals', JSON.stringify(snapshot)); } catch {}
+    }
+    if (new URLSearchParams(location.search).get('perf') === '1') console.info('[Portfolio CWV]', snapshot);
+    safeSend(snapshot);
   };
 
   if ("PerformanceObserver" in window) {
@@ -60,14 +68,14 @@
       new PerformanceObserver((list) => {
         const entries = list.getEntries();
         const last = entries[entries.length - 1];
-        if (last) vitals.lcp = Math.round(last.startTime);
+        if (last) { vitals.lcp = Math.round(last.startTime); publishVitals(); }
       }).observe({type:"largest-contentful-paint", buffered:true});
     } catch {}
     try {
       let cls = 0;
       new PerformanceObserver((list) => {
-        for (const e of list.getEntries()) if (!e.hadRecentInput) cls += e.value;
-        vitals.cls = Number(cls.toFixed(4));
+        for (const raw of list.getEntries()) { const e = /** @type {any} */ (raw); if (!e.hadRecentInput) cls += e.value; }
+        vitals.cls = Number(cls.toFixed(4)); publishVitals();
       }).observe({type:"layout-shift", buffered:true});
     } catch {}
     try {
@@ -75,11 +83,13 @@
         for (const e of list.getEntries()) {
           if (!vitals.inp || e.duration > vitals.inp) vitals.inp = Math.round(e.duration);
         }
-      }).observe({type:"event", buffered:true, durationThreshold:40});
+        publishVitals();
+      }).observe(/** @type {any} */ ({type:"event", buffered:true, durationThreshold:40}));
     } catch {}
   }
 
   addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") emitVitals();
   });
+  addEventListener('pagehide', emitVitals, {capture:true});
 })();

@@ -3,16 +3,22 @@
   const qa = (s, p=document) => [...p.querySelectorAll(s)];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // preloader
+  // Preloader: short on first visit, skipped for returning visits in this session.
   const pre = q('.preloader');
   const count = q('.preloader__count');
-  if (pre && !reduce) {
+  let seenThisSession = false;
+  try { seenThisSession = sessionStorage.getItem('portfolio-seen') === '1'; } catch {}
+  if (pre && !reduce && !seenThisSession) {
     const start = performance.now();
+    const duration = 560;
     const tick = (now) => {
-      const p = Math.min(100, Math.round((now - start) / 16));
-      if (count) count.textContent = String(p).padStart(2,'0');
-      if (p < 100) requestAnimationFrame(tick);
-      else setTimeout(() => pre.classList.add('done'), 160);
+      const progress = Math.min(100, Math.round(((now - start) / duration) * 100));
+      if (count) count.textContent = String(progress).padStart(2,'0');
+      if (progress < 100) requestAnimationFrame(tick);
+      else {
+        pre.classList.add('done');
+        try { sessionStorage.setItem('portfolio-seen','1'); } catch {}
+      }
     };
     requestAnimationFrame(tick);
   } else if (pre) pre.classList.add('done');
@@ -69,13 +75,30 @@
     sections.forEach(s=>nio.observe(s));
   }
 
-  // mobile menu
+  // mobile menu — dialog-like focus management for keyboard/screen-reader users.
   const menu = q('.mobile-menu'); const menuBtn = q('.menu-button'); const close = q('.mobile-menu__top button');
+  let menuReturnFocus = null;
+  const menuBackground = () => ['main','.footer','.mobile-action-bar'].map(sel=>document.querySelector(sel)).filter(Boolean);
   const setMenu = (open) => {
-    menu?.classList.toggle('open', open); document.body.classList.toggle('menu-open', open);
-    menu?.setAttribute('aria-hidden', String(!open)); menuBtn?.setAttribute('aria-expanded', String(open));
+    if (!menu) return;
+    if (open) menuReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    menu.classList.toggle('open', open); document.body.classList.toggle('menu-open', open);
+    menu.setAttribute('aria-hidden', String(!open)); menuBtn?.setAttribute('aria-expanded', String(open));
+    menuBackground().forEach(el => { if (open) el.setAttribute('inert',''); else el.removeAttribute('inert'); });
+    if (open) requestAnimationFrame(()=>close?.focus());
+    else menuReturnFocus?.focus?.({preventScroll:true});
   };
-  menuBtn?.addEventListener('click',()=>setMenu(true)); close?.addEventListener('click',()=>setMenu(false)); qa('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>setMenu(false))); addEventListener('keydown',e=>{if(e.key==='Escape') setMenu(false)});
+  menuBtn?.addEventListener('click',()=>setMenu(true)); close?.addEventListener('click',()=>setMenu(false)); qa('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+  addEventListener('keydown',e=>{
+    if (!menu?.classList.contains('open')) return;
+    if(e.key==='Escape'){e.preventDefault();setMenu(false);return;}
+    if(e.key!=='Tab') return;
+    const focusables=qa('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])',menu).filter(el=>!el.closest('[hidden]'));
+    if(!focusables.length) return;
+    const first=focusables[0],last=focusables[focusables.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  });
 
   // counters
   qa('.counter').forEach(el => {
@@ -131,6 +154,8 @@
   const views = modal ? qa('[data-case-view]', modal) : [];
   let lastFocus = null;
   let activeCase = null;
+  const pageLayers = () => ['.site-nav','main','.footer','.mobile-action-bar'].map(sel=>document.querySelector(sel)).filter(Boolean);
+  const setPageInert = (on) => pageLayers().forEach(el=>{ if(on) el.setAttribute('inert',''); else el.removeAttribute('inert'); });
 
   const transitionPulse = (label='PRODUCT') => {
     if (!route) return;
@@ -158,6 +183,7 @@
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
       document.body.classList.add('case-open');
+      setPageInert(true);
       panel.scrollTop = 0;
       panel.focus({preventScroll:true});
     }, 210);
@@ -169,6 +195,7 @@
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('case-open');
+    setPageInert(false);
     const prior = lastFocus;
     activeCase = null;
     if (prior && typeof prior.focus === 'function') prior.focus({preventScroll:true});
@@ -218,19 +245,21 @@
 
 // Expert motion direction — restrained luxury, transform/opacity first
 (() => {
+  /** @param {string} s @param {ParentNode} [p] */
   const q = (s, p=document) => p.querySelector(s);
+  /** @param {string} s @param {ParentNode} [p] */
   const qa = (s, p=document) => [...p.querySelectorAll(s)];
   const clamp = (v, a=0, b=1) => Math.max(a, Math.min(b, v));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
   const coarse = matchMedia('(pointer:coarse)').matches;
   const root = document.documentElement;
-  const hero = q('.hero');
-  const process = q('.process');
-  const portrait = q('.about-portrait');
-  const landscape = q('.about-landscape');
-  const contact = q('.contact');
-  const railItems = qa('.section-rail [data-rail]');
+  const hero = /** @type {HTMLElement|null} */ (q('.hero'));
+  const process = /** @type {HTMLElement|null} */ (q('.process'));
+  const portrait = /** @type {HTMLElement|null} */ (q('.about-portrait'));
+  const landscape = /** @type {HTMLElement|null} */ (q('.about-landscape'));
+  const contact = /** @type {HTMLElement|null} */ (q('.contact'));
+  const railItems = /** @type {HTMLElement[]} */ (qa('.section-rail [data-rail]'));
   let px = 0, py = 0, heroProgress = 0;
 
   const applyHero = () => {
@@ -263,9 +292,10 @@
     }, {passive:true});
 
     contact?.addEventListener('pointermove', e => {
+      const pointer = /** @type {PointerEvent} */ (e);
       const r = contact.getBoundingClientRect();
-      const x = clamp((e.clientX-r.left)/r.width,0,1)*100;
-      const y = clamp((e.clientY-r.top)/r.height,0,1)*100;
+      const x = clamp((pointer.clientX-r.left)/r.width,0,1)*100;
+      const y = clamp((pointer.clientY-r.top)/r.height,0,1)*100;
       contact.style.setProperty('--contact-x', `${x.toFixed(1)}%`);
       contact.style.setProperty('--contact-y', `${y.toFixed(1)}%`);
     }, {passive:true});
@@ -352,13 +382,14 @@
   if (reduce) return;
   document.querySelectorAll('.pill').forEach(btn => {
     btn.addEventListener('pointerdown', e => {
+      const pointer = /** @type {PointerEvent} */ (e);
       const r = btn.getBoundingClientRect();
       const d = Math.max(r.width, r.height) * 1.15;
       const span = document.createElement('span');
       span.className = 'ripple';
       span.style.width = span.style.height = `${d}px`;
-      span.style.left = `${e.clientX - r.left - d / 2}px`;
-      span.style.top = `${e.clientY - r.top - d / 2}px`;
+      span.style.left = `${pointer.clientX - r.left - d / 2}px`;
+      span.style.top = `${pointer.clientY - r.top - d / 2}px`;
       btn.appendChild(span);
       span.addEventListener('animationend', () => span.remove());
     });
@@ -408,10 +439,11 @@
 // whenever the hero is off-screen or the tab is hidden to stay cheap.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const canvas = document.getElementById('hero-particles');
-  const hero = document.querySelector('.hero');
+  const canvas = /** @type {HTMLCanvasElement|null} */ (document.getElementById('hero-particles'));
+  const hero = /** @type {HTMLElement|null} */ (document.querySelector('.hero'));
   if (!canvas || !hero || reduce) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
   const coarse = matchMedia('(pointer:coarse)').matches;
   const COUNT = coarse ? 16 : 30;
   let w = 0, h = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -480,44 +512,78 @@
   });
 })();
 
-// Contact form — validates all fields and prepares a complete project email.
-// No fake network success is shown: this static portfolio opens the visitor's email client.
+// Contact form — validates locally, submits through a configured form endpoint,
+// and only falls back to mailto when the network provider is unavailable.
 (() => {
-  const CONTACT_EMAIL = window.PORTFOLIO_CONFIG?.contact?.domainEmail || window.PORTFOLIO_CONFIG?.contact?.email || 'ibronovnajib@gmail.com';
-  /** @type {HTMLFormElement|null} */
-  const form = document.getElementById('contact-form');
-  /** @type {HTMLInputElement|null} */
-  const email = document.getElementById('contact-email');
-  /** @type {HTMLInputElement|null} */
-  const name = document.getElementById('contact-name');
-  /** @type {HTMLSelectElement|null} */
-  const project = document.getElementById('contact-project');
-  /** @type {HTMLTextAreaElement|null} */
-  const message = document.getElementById('contact-message');
-  /** @type {HTMLElement|null} */
-  const status = document.getElementById('contact-form-status');
+  const cfg = window.PORTFOLIO_CONFIG || {};
+  const CONTACT_EMAIL = cfg.contact?.domainEmail || cfg.contact?.email || 'ibronovnajib@gmail.com';
+  const FORM_ENDPOINT = cfg.contact?.formEndpoint || '';
+  const form = /** @type {HTMLFormElement|null} */ (document.getElementById('contact-form'));
+  const email = /** @type {HTMLInputElement|null} */ (document.getElementById('contact-email'));
+  const name = /** @type {HTMLInputElement|null} */ (document.getElementById('contact-name'));
+  const project = /** @type {HTMLSelectElement|null} */ (document.getElementById('contact-project'));
+  const message = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('contact-message'));
+  const status = /** @type {HTMLElement|null} */ (document.getElementById('contact-form-status'));
+  /** @type {HTMLButtonElement|null} */
+  const submitButton = form?.querySelector('button[type="submit"]') || null;
   if (!form || !email || !name || !project || !message || !status) return;
   const t = (key, fallback) => window.PortfolioI18n?.t ? window.PortfolioI18n.t(key) : fallback;
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const setStatus = (msg, kind='') => { status.textContent = msg; status.classList.toggle('is-error', kind === 'error'); status.classList.toggle('is-success', kind === 'success'); };
-  form.addEventListener('submit', e => {
+  const mailFallback = ({n,em,msg}) => {
+    const subject = encodeURIComponent(`Project inquiry — ${project.value}`);
+    const host = (()=>{ try{return new URL(cfg.siteUrl || location.origin).host}catch{return location.host} })();
+    const body = encodeURIComponent(`Hi Najibullo,\n\nName: ${n}\nEmail: ${em}\nProject: ${project.value}\n\n${msg}\n\nSent from ${host} portfolio.`);
+    location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+  };
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const n = name.value.trim(), em = email.value.trim(), msg = message.value.trim();
     if (n.length < 2) { form.classList.add('has-error'); name.focus(); setStatus(t('contact.form.invalidName','Please enter your name.'),'error'); return; }
     if (!EMAIL_RE.test(em)) { form.classList.add('has-error'); email.focus(); setStatus(t('contact.form.invalid','Please enter a valid email address.'),'error'); return; }
     if (msg.length < 8) { form.classList.add('has-error'); message.focus(); setStatus(t('contact.form.invalidMessage','Please add a short project message.'),'error'); return; }
+    const honey = /** @type {HTMLInputElement|null} */ (form.querySelector('input[name="_honey"]'));
+    if (honey?.value) return;
     form.classList.remove('has-error');
-    setStatus(t('contact.form.opening','Opening your email app…'));
-    const subject = encodeURIComponent(`Project inquiry — ${project.value}`);
-    const body = encodeURIComponent(`Hi Najibullo,\n\nName: ${n}\nEmail: ${em}\nProject: ${project.value}\n\n${msg}\n\nSent from najibulloh.tj portfolio.`);
-    window.trackPortfolioEvent?.('contact_submit', {project:project.value});
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-    setTimeout(()=>setStatus(t('contact.form.sent','Your email app should now be open with the message ready to send.'),'success'),450);
+    setStatus(t('contact.form.opening','Sending your message securely…'));
+    submitButton?.setAttribute('aria-busy','true');
+    if (submitButton) submitButton.disabled = true;
+    const payload = {
+      name:n, email:em, project:project.value, message:msg,
+      _subject:`Portfolio inquiry — ${project.value}`,
+      _template:'table',
+      _url:cfg.siteUrl || location.href
+    };
+    try {
+      if (!FORM_ENDPOINT) throw new Error('No contact endpoint configured');
+      const controller = new AbortController();
+      const timeout = setTimeout(()=>controller.abort(), 10000);
+      const res = await fetch(FORM_ENDPOINT, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(payload),
+        signal:controller.signal
+      });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(`Contact endpoint returned ${res.status}`);
+      const data = await res.json().catch(()=>({success:true}));
+      if (data && data.success === false) throw new Error(data.message || 'Contact endpoint rejected submission');
+      form.reset();
+      setStatus(t('contact.form.sent','Message sent. I’ll reply to the email you provided.'),'success');
+      window.trackPortfolioEvent?.('contact_submit', {project:project.value, provider:cfg.contact?.formProvider || 'configured'});
+    } catch (err) {
+      setStatus(t('contact.form.sendError','The form service is unavailable. Opening your email app as a fallback…'),'error');
+      window.trackPortfolioEvent?.('contact_submit_fallback', {project:project.value});
+      setTimeout(()=>mailFallback({n,em,msg}),450);
+    } finally {
+      submitButton?.removeAttribute('aria-busy');
+      if (submitButton) submitButton.disabled = false;
+    }
   });
   [name,email,message].forEach(el=>el.addEventListener('input',()=>{ if(form.classList.contains('has-error')){form.classList.remove('has-error');setStatus('');} }));
 })();
 
-// Live Dushanbe local time — a small, honest "this is a real person, live
+// Live Tajikistan local time — a small, honest "this is a real person, live
 // right now" signal in the hero status pill. Ticks on a minute-aligned
 // interval rather than every second, since only the minute digit is shown.
 (() => {
@@ -548,7 +614,8 @@
   btn.addEventListener('click', () => {
     scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     const target = document.getElementById('top');
-    target?.querySelector('a,button')?.focus?.({ preventScroll: true });
+    const focusTarget = /** @type {HTMLElement|null} */ (target?.querySelector('a,button') || null);
+    focusTarget?.focus({ preventScroll: true });
   });
 })();
 
@@ -574,7 +641,8 @@
 
   const t = (key, fallback) => window.PortfolioI18n?.t ? window.PortfolioI18n.t(key) : fallback;
 
-  document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+  document.querySelectorAll('a[href^="mailto:"]').forEach(node => {
+    const link = /** @type {HTMLAnchorElement} */ (node);
     link.addEventListener('click', () => {
       const email = link.href.replace(/^mailto:/, '').split('?')[0];
       if (!email || !navigator.clipboard?.writeText) return;
@@ -599,8 +667,15 @@
   const pick = (value, lang) => typeof value === 'object' && value ? (value[lang] || value.en || Object.values(value)[0] || '') : (value || '');
 
   const render = () => {
-    if (!items.length) { section.hidden = true; track.innerHTML = ''; return; }
     const lang = document.documentElement.lang || 'en';
+    if (!items.length) {
+      const title = esc(window.PortfolioI18n?.t?.('testimonials.emptyTitle') || 'Verified proof only.');
+      const text = esc(window.PortfolioI18n?.t?.('testimonials.emptyText') || 'No invented testimonials are shown. Use the live products, real screens and GitHub profile as evidence.');
+      const github = esc(window.PORTFOLIO_CONFIG?.social?.github || 'https://github.com/ibronovnajib-dev');
+      track.innerHTML = `<article class="testimonial-card testimonial-card--proof" role="listitem"><span class="testimonial-card__quote" aria-hidden="true">✓</span><p class="testimonial-card__text"><strong>${title}</strong><br>${text}</p><div class="testimonial-card__role"><a href="${github}" rel="noopener" target="_blank">GitHub ↗</a> · <a href="https://ustohona.tj" rel="noopener" target="_blank">Ustohona.tj ↗</a> · <a href="https://tajlife.tj" rel="noopener" target="_blank">TajLife.tj ↗</a></div></article>`;
+      section.hidden = false;
+      return;
+    }
     track.innerHTML = items.map(item => {
       const rating = Number(item.rating) || 0;
       const stars = rating ? `<div class="testimonial-card__stars" aria-label="${Math.max(1,Math.min(5,rating))}/5">${'★'.repeat(Math.max(0,Math.min(5,rating)))}${'☆'.repeat(5-Math.max(0,Math.min(5,rating)))}</div>` : '';
@@ -614,7 +689,7 @@
   fetch('./assets/testimonials.json', {cache:'no-store'})
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => { items = Array.isArray(data?.verified) ? data.verified.filter(x => x && x.name && x.quote) : []; render(); })
-    .catch(() => { section.hidden = true; });
+    .catch(() => { items = []; render(); });
   document.addEventListener('portfolio:languagechange', render);
 })();
 
@@ -625,7 +700,8 @@
   const cfg = window.PORTFOLIO_CONFIG || {};
   const social = cfg.social || {};
   document.querySelectorAll('[data-profile-age]').forEach(el => { el.textContent = String(cfg.profile?.age ?? 16); });
-  document.querySelectorAll('[data-social]').forEach(a => {
+  document.querySelectorAll('[data-social]').forEach(node => {
+    const a = /** @type {HTMLAnchorElement} */ (node);
     const key = a.dataset.social;
     const url = social[key];
     if (url) {
@@ -636,36 +712,55 @@
       a.removeAttribute('href');
     }
   });
+  document.querySelectorAll('[data-contact]').forEach(node => {
+    const a = /** @type {HTMLAnchorElement} */ (node);
+    const key = a.dataset.contact;
+    const url = cfg.contact?.[key];
+    if (url) { a.href = url; a.hidden = false; }
+    else { a.hidden = true; a.removeAttribute('href'); }
+  });
+  document.querySelectorAll('[data-site-url]').forEach(node => {
+    const a = /** @type {HTMLAnchorElement} */ (node);
+    const url = cfg.siteUrl || location.origin;
+    a.href = url;
+    try { a.textContent = new URL(url).host; } catch { a.textContent = url; }
+  });
 
   if (cfg.contact?.domainEmail) {
-    document.querySelectorAll('a[href^="mailto:ibronovnajib@gmail.com"]').forEach(a => {
+    document.querySelectorAll('a[href^="mailto:ibronovnajib@gmail.com"]').forEach(node => {
+      const a = /** @type {HTMLAnchorElement} */ (node);
       a.href = `mailto:${cfg.contact.domainEmail}`;
     });
   }
 
   document.addEventListener('click', e => {
-    const link = e.target.closest('a,button');
+    const target = e.target instanceof Element ? e.target : null;
+    const link = /** @type {HTMLElement|null} */ (target?.closest('a,button') || null);
     if (!link || !window.trackPortfolioEvent) return;
-    if (link.matches('[href*="Najibullo-CV.pdf"]')) trackPortfolioEvent('resume_download');
-    else if (link.classList.contains('case-trigger')) trackPortfolioEvent('case_study_open', {product:link.dataset.case || ''});
-    else if (link.classList.contains('external-launch')) trackPortfolioEvent('product_visit', {url:link.href});
-    else if (link.closest('.contact-quick')) trackPortfolioEvent('contact_click', {channel:(link.textContent || '').trim()});
+    if (link.matches('[href*="Najibullo-CV.pdf"]')) window.trackPortfolioEvent('resume_download');
+    else if (link.classList.contains('case-trigger')) window.trackPortfolioEvent('case_study_open', {product:link.dataset.case || ''});
+    else if (link.classList.contains('external-launch')) window.trackPortfolioEvent('product_visit', {url:link instanceof HTMLAnchorElement ? link.href : ''});
+    else if (link.closest('.contact-quick')) window.trackPortfolioEvent('contact_click', {channel:(link.textContent || '').trim()});
   });
 })();
 
 // VIP Project Concierge — a focused conversion flow rather than a generic contact form.
 (() => {
-  const modal = document.getElementById('project-concierge');
+  const modal = /** @type {HTMLElement|null} */ (document.getElementById('project-concierge'));
   if (!modal) return;
-  const panel = modal.querySelector('.concierge__panel');
-  const form = modal.querySelector('#concierge-form');
-  const next = modal.querySelector('[data-concierge-next]');
-  const back = modal.querySelector('[data-concierge-back]');
-  const status = modal.querySelector('#concierge-status');
-  const progress = modal.querySelector('.concierge__progress i');
-  const steps = [...modal.querySelectorAll('[data-concierge-step]')];
+  const panel = /** @type {HTMLElement|null} */ (modal.querySelector('.concierge__panel'));
+  const form = /** @type {HTMLFormElement|null} */ (modal.querySelector('#concierge-form'));
+  const next = /** @type {HTMLButtonElement|null} */ (modal.querySelector('[data-concierge-next]'));
+  const back = /** @type {HTMLButtonElement|null} */ (modal.querySelector('[data-concierge-back]'));
+  const status = /** @type {HTMLElement|null} */ (modal.querySelector('#concierge-status'));
+  const progress = /** @type {HTMLElement|null} */ (modal.querySelector('.concierge__progress i'));
+  const steps = /** @type {HTMLElement[]} */ ([...modal.querySelectorAll('[data-concierge-step]')]);
   let current = 1;
   let returnFocus = null;
+  const cfg = window.PORTFOLIO_CONFIG || {};
+  const formEndpoint = cfg.contact?.formEndpoint || '';
+  const conciergeBackground = () => ['.site-nav','main','.footer','.mobile-action-bar'].map(sel=>document.querySelector(sel)).filter(Boolean);
+  const setConciergeInert = (on) => conciergeBackground().forEach(el=>{ if(on) el.setAttribute('inert',''); else el.removeAttribute('inert'); });
   const t = key => window.PortfolioI18n?.t?.(key) || key;
 
   const setStep = n => {
@@ -683,10 +778,11 @@
   };
 
   const open = trigger => {
-    returnFocus = trigger || document.activeElement;
+    returnFocus = trigger instanceof HTMLElement ? trigger : (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
     document.body.classList.add('concierge-lock');
+    setConciergeInert(true);
     setStep(1);
     setTimeout(() => panel?.focus(), 40);
     window.trackPortfolioEvent?.('project_concierge_open');
@@ -695,7 +791,8 @@
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden','true');
     document.body.classList.remove('concierge-lock');
-    returnFocus?.focus?.();
+    setConciergeInert(false);
+    returnFocus?.focus?.({preventScroll:true});
   };
 
   document.querySelectorAll('[data-concierge-open]').forEach(el => el.addEventListener('click', e => {
@@ -705,27 +802,29 @@
   back?.addEventListener('click', () => setStep(current - 1));
   form?.addEventListener('submit', e => e.preventDefault());
 
-  const selected = name => form.querySelector(`input[name="${name}"]:checked`)?.value || '';
+  const selected = name => /** @type {HTMLInputElement|null} */ (form.querySelector(`input[name="${name}"]:checked`))?.value || '';
+  const emailField = /** @type {HTMLInputElement|null} */ (form.elements.namedItem('email'));
+  const noteField = /** @type {HTMLTextAreaElement|null} */ (form.elements.namedItem('note'));
   const validateCurrent = () => {
     if (current === 1 && !selected('product')) { status.textContent = t('concierge.select'); return false; }
     if (current === 2 && !selected('stage')) { status.textContent = t('concierge.select'); return false; }
     if (current === 3) {
       if (!selected('timeline')) { status.textContent = t('concierge.select'); return false; }
-      const email = form.elements.email.value.trim();
-      if (!/^\S+@\S+\.\S+$/.test(email)) { status.textContent = t('concierge.invalidEmail'); form.elements.email.focus(); return false; }
+      const email = emailField?.value.trim() || '';
+      if (!/^\S+@\S+\.\S+$/.test(email)) { status.textContent = t('concierge.invalidEmail'); emailField?.focus(); return false; }
     }
     return true;
   };
 
-  next?.addEventListener('click', () => {
+  next?.addEventListener('click', async () => {
     if (!validateCurrent()) return;
     if (current < 3) { setStep(current + 1); return; }
-    const email = form.elements.email.value.trim();
-    const note = form.elements.note.value.trim();
+    const email = emailField?.value.trim() || '';
+    const note = noteField?.value.trim() || '';
     const product = selected('product');
     const stage = selected('stage');
     const timeline = selected('timeline');
-    const to = window.PORTFOLIO_CONFIG?.contact?.domainEmail || window.PORTFOLIO_CONFIG?.contact?.email || 'ibronovnajib@gmail.com';
+    const to = cfg.contact?.domainEmail || cfg.contact?.email || 'ibronovnajib@gmail.com';
     const subject = `Project brief — ${product}`;
     const body = [
       'Hi Najibullo,', '',
@@ -736,16 +835,39 @@
       note ? `Idea: ${note}` : '', '',
       'Sent from the private project concierge.'
     ].filter(Boolean).join('\n');
-    status.textContent = t('concierge.ready');
-    window.trackPortfolioEvent?.('project_concierge_submit', {product, stage, timeline});
-    setTimeout(() => { location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; }, 220);
+    status.textContent = t('concierge.sending');
+    next.setAttribute('aria-busy','true');
+    next.disabled = true;
+    const payload = {name:'Project Concierge', email, product, stage, timeline, message:note || 'No extra note provided.', _subject:subject, _template:'table', _url:cfg.siteUrl || location.href};
+    try {
+      if (!formEndpoint) throw new Error('No form endpoint configured');
+      const controller = new AbortController();
+      const timeout = setTimeout(()=>controller.abort(), 10000);
+      const res = await fetch(formEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+      clearTimeout(timeout);
+      if(!res.ok) throw new Error(`Form endpoint returned ${res.status}`);
+      const data = await res.json().catch(()=>({success:true}));
+      if(data && data.success===false) throw new Error(data.message||'Submission rejected');
+      status.textContent = t('concierge.sent');
+      form.reset();
+      setStep(1);
+      status.textContent = t('concierge.sent');
+      window.trackPortfolioEvent?.('project_concierge_submit',{product,stage,timeline,provider:cfg.contact?.formProvider||'configured'});
+    } catch {
+      status.textContent = t('concierge.sendError');
+      window.trackPortfolioEvent?.('project_concierge_fallback',{product,stage,timeline});
+      setTimeout(()=>{location.href=`mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;},500);
+    } finally {
+      next.removeAttribute('aria-busy');
+      next.disabled = false;
+    }
   });
 
   document.addEventListener('keydown', e => {
     if (!modal.classList.contains('open')) return;
     if (e.key === 'Escape') { e.preventDefault(); close(); return; }
     if (e.key === 'Tab') {
-      const focusables = [...modal.querySelectorAll('button:not([hidden]),input:not([disabled]),textarea,a[href]')].filter(el => el.offsetParent !== null);
+      const focusables = /** @type {HTMLElement[]} */ ([...modal.querySelectorAll('button:not([hidden]),input:not([disabled]),textarea,a[href]')]).filter(el => el.offsetParent !== null);
       if (!focusables.length) return;
       const first = focusables[0], last = focusables[focusables.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }

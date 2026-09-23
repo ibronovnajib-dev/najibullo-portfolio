@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#0b0a09",
   "theme_color": "#0b0a09",
-  "lang": "tg",
+  "lang": "en",
   "icons": [
     {
       "src": "./favicon-192.png",
@@ -18,5 +18,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "scope": "/"
 }

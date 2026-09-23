@@ -1,0 +1,44 @@
+services:
+  - type: web
+    runtime: static
+    name: najibullo-portfolio
+    repo: https://github.com/ibronovnajib-dev/najibullo-portfolio.git
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: python3 build.py
+    staticPublishPath: dist
+    envVars:
+      - key: SITE_URL
+        value: https://najibullo-portfolio.onrender.com
+    routes:
+      - type: redirect
+        source: /index.html
+        destination: /
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=(), payment=()
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://formsubmit.co https://cloudflareinsights.com https://www.google-analytics.com https://region1.google-analytics.com; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=604800, stale-while-revalidate=86400
+      - path: /*.js
+        name: Cache-Control
+        value: public, max-age=3600, must-revalidate
+      - path: /*.css
+        name: Cache-Control
+        value: public, max-age=3600, must-revalidate

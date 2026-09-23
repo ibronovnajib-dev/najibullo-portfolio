@@ -1,49 +1,73 @@
-# Najibullo Portfolio — Production Build
+# Najibullo Portfolio — Production v4
 
-## Run locally
+Current production URL: https://najibullo-portfolio.onrender.com
+
+## Architecture
+
+Maintainable sources live in:
+
+- `src/js/` — behavior modules
+- `src/styles/` — style modules
+- `hero-3d.js` — dependency-free progressive 3D canvas enhancement
+- `i18n.js` — EN / TG / RU localization and URL language handling
+
+`script.js` and `styles.css` at the repository root are compatibility snapshots for the already-created Render static service. Generate them from source modules; do not edit the snapshots by hand.
+
+## Full verification
+
 ```bash
-python3 -m http.server 8000
-open http://localhost:8000
+python3 sync_snapshots.py
+tsc -p tsconfig.json
+python3 qa.py
+python3 build.py
+python3 qa.py dist
 ```
 
-## Verified-data policy
-The portfolio publishes only source-verified product facts. `assets/verified-metrics.json` intentionally keeps users/orders/masters/traffic as `null` until a real analytics export or database count is supplied. Do not replace these with estimates.
+Or, if npm is available:
 
-## GitHub / LinkedIn / domain email
-Edit `config.js` and set exact verified URLs / address:
-```js
-social: { github: "https://github.com/...", linkedin: "https://www.linkedin.com/in/..." },
-contact: { domainEmail: "hello@najibulloh.tj" }
+```bash
+npm run check
 ```
-Empty values stay hidden automatically.
 
-## Analytics
-`analytics.js` is production-ready but disabled until a real provider credential is set in `config.js`.
-Supported options:
-- Cloudflare Web Analytics: `cloudflareBeaconToken`
-- GA4: `ga4Id`
-- first-party endpoint: `endpoint`
+No npm install is required by the portfolio itself. `tsc` must already be available in the development environment for type-checking.
 
-It also captures LCP/CLS/INP through the browser PerformanceObserver API and only sends when analytics is actually configured. Do Not Track is respected.
+## Local production preview
 
-## Verified testimonials
-Add only real client feedback to `assets/testimonials.json`. The section remains hidden while the verified array is empty.
+```bash
+python3 build.py
+python3 -m http.server 8000 -d dist
+```
 
-## HTTPS / security headers
-`_headers`, `_redirects` and `.well-known/security.txt` are included for Cloudflare Pages / compatible static hosting. Attach the custom domain `najibulloh.tj` in the hosting dashboard and enable HTTPS there; DNS/SSL cannot be completed from this static ZIP alone.
+Open `http://localhost:8000/?lang=en`, `?lang=tg`, or `?lang=ru`.
 
-## Final production checks
-- Test TG / RU / EN
-- Test mobile menu and case-study modal
-- Verify Ustohona/TajLife external links
-- Fill GitHub/LinkedIn only with exact profile URLs
-- Add real usage metrics only from analytics/database exports
-- Add real iOS screenshots only after a verified iOS build is available
+## Render
 
+`render.yaml` describes the intended production service: build command, `dist` publish directory, CSP/security headers, HSTS, cache rules and the `/index.html` redirect.
 
-## Strategy V3 interactions
-- `Cmd/Ctrl + K`: Command Palette
-- Theme button: dark / warm-light theme (saved locally)
-- Demo Mode: interactive portfolio simulations, explicitly not live production data
-- Three.js hero: desktop-only, performance-gated, automatic fallback on mobile/reduced motion/import failure
-- Project Concierge: structured project brief flow
+The currently live Render service was originally created manually. Until it is migrated/recreated from the Blueprint or its dashboard settings are made equivalent, the root compatibility snapshots keep the existing service functional. Do not claim Blueprint-only headers are live until they are verified on the public response.
+
+For a later custom domain, set the build environment variable:
+
+```text
+SITE_URL=https://your-domain.example
+```
+
+`build.py` rewrites the production URL in canonical links, Open Graph metadata, sitemap, robots, runtime config and structured data.
+
+## Contact
+
+Contact and Project Concierge submit through the configured FormSubmit AJAX endpoint and have a `mailto:` fallback. FormSubmit requires the owner to complete its one-time verification email before real delivery is guaranteed. Success is shown only after the provider returns a successful response.
+
+## Analytics / Core Web Vitals
+
+LCP, CLS and INP are measured in-browser. The current snapshot is exposed as `window.PORTFOLIO_METRICS` and can be logged with `?perf=1`.
+
+Central collection is deliberately disabled until a real GA4 ID, Cloudflare Web Analytics token, or first-party analytics endpoint is provided in `config.js`. No analytics credential is fabricated.
+
+## Verification-only data
+
+- GitHub is shown because the verified profile URL is known.
+- LinkedIn and a domain email stay hidden until exact working values are supplied.
+- Telegram stays hidden until a verified profile URL is supplied.
+- Testimonials are never invented; without authorized client quotes, the site shows a verified-proof card instead.
+- Unverified user/order/traffic counts remain unpublished.

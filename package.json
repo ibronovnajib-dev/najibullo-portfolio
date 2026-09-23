@@ -1,0 +1,12 @@
+{
+  "name": "najibullo-portfolio",
+  "private": true,
+  "version": "4.0.0",
+  "scripts": {
+    "sync": "python3 sync_snapshots.py",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "python3 qa.py",
+    "build": "python3 build.py",
+    "check": "python3 sync_snapshots.py && tsc -p tsconfig.json && python3 qa.py && python3 build.py && python3 qa.py dist"
+  }
+}

@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://najibulloh.tj/</loc>
-    <lastmod>2026-09-22</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://najibulloh.tj/?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://najibulloh.tj/?lang=ru"/>
-    <xhtml:link rel="alternate" hreflang="tg" href="https://najibulloh.tj/?lang=tg"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://najibulloh.tj/"/>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://najibullo-portfolio.onrender.com/?lang=en</loc>
+    <lastmod>2026-09-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://najibullo-portfolio.onrender.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://najibullo-portfolio.onrender.com/?lang=ru"/>
+    <xhtml:link rel="alternate" hreflang="tg" href="https://najibullo-portfolio.onrender.com/?lang=tg"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://najibullo-portfolio.onrender.com/"/>
+    <changefreq>monthly</changefreq><priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://najibullo-portfolio.onrender.com/?lang=ru</loc>
+    <lastmod>2026-09-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://najibullo-portfolio.onrender.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://najibullo-portfolio.onrender.com/?lang=ru"/>
+    <xhtml:link rel="alternate" hreflang="tg" href="https://najibullo-portfolio.onrender.com/?lang=tg"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://najibullo-portfolio.onrender.com/"/>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://najibullo-portfolio.onrender.com/?lang=tg</loc>
+    <lastmod>2026-09-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://najibullo-portfolio.onrender.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://najibullo-portfolio.onrender.com/?lang=ru"/>
+    <xhtml:link rel="alternate" hreflang="tg" href="https://najibullo-portfolio.onrender.com/?lang=tg"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://najibullo-portfolio.onrender.com/"/>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
   </url>
 </urlset>

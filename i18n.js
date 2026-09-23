@@ -104,8 +104,9 @@
     "contact.cta": "Get in Touch",
     "contact.quick": "Or message me directly:",
     "contact.form.invalid": "Please enter a valid email address.",
-    "contact.form.opening": "Opening your email app…",
-    "contact.form.sent": "Thanks! Your email app should now be open with your message ready to send.",
+    "contact.form.opening": "Sending your message securely…",
+    "contact.form.sent": "Message sent. I’ll reply to the email you provided.",
+    "contact.form.sendError": "The form service is unavailable. Opening your email app as a fallback…",
     "common.tajikistan": "Tajikistan",
     "contact.signature": "SAME PEOPLE.<br/>BRIGHTER TOMORROW.",
     "case.label": "CASE STUDY",
@@ -183,10 +184,12 @@
     "notfound.cta.home": "Back to Home",
     "notfound.cta.contact": "Contact Me",
     "notfound.meta.title": "Page Not Found — Najibullo",
-    "status.city": "Dushanbe",
+    "status.city": "Tajikistan",
     "a11y.backToTop": "Back to top",
     "toast.emailCopied": "Email copied to clipboard",
-    "testimonials.label": "WHAT CLIENTS SAY",
+    "testimonials.label": "TRUST & PROOF",
+    "testimonials.emptyTitle": "Verified proof only.",
+    "testimonials.emptyText": "No invented testimonials are shown. Until verified client feedback is available, use the live products, real product screens and GitHub profile as evidence.",
     "testimonials.title": "Real Feedback.<br/>Real Trust.",
     "cv.download": "Download CV",
     "hero.metric.age": "Founder & Developer",
@@ -194,7 +197,7 @@
     "hero.metric.platformSuffix": "+ MOBILE",
     "hero.metric.platforms": "Android • iOS • Web",
     "hero.metric.daysSuffix": " DAYS",
-    "hero.metric.delivery": "Selected MVP delivery",
+    "hero.metric.delivery": "Small scoped MVP / prototype",
     "cap.label": "WHAT I BUILD",
     "cap.title": "Web. Android. iOS.<br/><span>One product standard.</span>",
     "cap.intro": "I can take a product from idea to a launch-ready version across web and mobile, keeping product thinking, design, engineering and QA in one coherent build process.",
@@ -328,7 +331,10 @@
     "concierge.send": "Prepare project brief",
     "concierge.select": "Choose an option to continue.",
     "concierge.invalidEmail": "Enter a valid email address.",
-    "concierge.ready": "Your project brief is ready — opening your email app.",
+    "concierge.ready": "Your project brief is ready.",
+    "concierge.sending": "Sending your project brief securely…",
+    "concierge.sent": "Project brief sent. I’ll reply to the email you provided.",
+    "concierge.sendError": "The form service is unavailable. Opening an email draft as a fallback…",
     "theme.toggle": "Toggle light or dark theme",
     "tech.system.title": "Frontend → Backend → Database → DevOps → AI.",
     "tech.system.intro": "I treat the stack as one product system, not a wall of logos. Every layer has a job, an interface and a reason to exist.",
@@ -509,8 +515,9 @@
     "contact.cta": "Тамос гиред",
     "contact.quick": "Ё бевосита паём диҳед:",
     "contact.form.invalid": "Лутфан почтаи электронии дурустро ворид кунед.",
-    "contact.form.opening": "Барномаи почта кушода истодааст…",
-    "contact.form.sent": "Ташаккур! Ҳоло барномаи почтаи шумо бо паёми омодашуда кушода мешавад.",
+    "contact.form.opening": "Паёми шумо бехатар фиристода мешавад…",
+    "contact.form.sent": "Паём фиристода шуд. Ман ба email-и воридкардаи шумо ҷавоб медиҳам.",
+    "contact.form.sendError": "Хидмати фиристодани form дастнорас аст. Ҳамчун роҳи эҳтиётӣ барномаи email кушода мешавад…",
     "contact.label": "ФАРДОРО ЯКҶО МЕСОЗЕМ",
     "contact.signature": "ҲАМИН МАРДУМ.<br/>ФАРДОИ РАВШАНТАР.",
     "contact.text": "Барои имкониятҳои нав, ҳамкорӣ ва лоиҳаҳои пурмазмун, ки ба одамон арзиш меоранд ва ба фардои равшантарини Тоҷикистон мусоидат мекунанд, ҳамеша омодаам.",
@@ -592,10 +599,12 @@
     "notfound.cta.home": "Бозгашт ба Сафҳаи Асосӣ",
     "notfound.cta.contact": "Бо Ман Тамос Гиред",
     "notfound.meta.title": "Саҳифа Ёфт Нашуд — Наҷибулло",
-    "status.city": "Душанбе",
+    "status.city": "Тоҷикистон",
     "a11y.backToTop": "Бозгашт ба боло",
     "toast.emailCopied": "Почтаи электронӣ нусхабардорӣ шуд",
-    "testimonials.label": "ФИКРИ МИЗОҶОН",
+    "testimonials.label": "ЭЪТИМОД ВА ДАЛЕЛ",
+    "testimonials.emptyTitle": "Танҳо далели тасдиқшуда.",
+    "testimonials.emptyText": "Шарҳи сохта нишон дода намешавад. То омода шудани фикри воқеии мизоҷон, маҳсулоти зинда, экранҳои воқеӣ ва профили GitHub ҳамчун далел истифода мешаванд.",
     "testimonials.title": "Шарҳи воқеӣ.<br/>Эътимоди воқеӣ.",
     "cv.download": "Боргирии резюме",
     "hero.metric.age": "Мутахассис ва барномасоз",
@@ -603,7 +612,7 @@
     "hero.metric.platformSuffix": "+ MOBILE",
     "hero.metric.platforms": "Android • iOS • Web",
     "hero.metric.daysSuffix": " РӮЗ",
-    "hero.metric.delivery": "MVP-ҳои интихобшуда",
+    "hero.metric.delivery": "MVP / prototype-и хурди дақиқ",
     "cap.label": "ЧӢ МЕСОЗАМ",
     "cap.title": "Web. Android. iOS.<br/><span>Як стандарти маҳсулот.</span>",
     "cap.intro": "Метавонам маҳсулотро аз ғоя то версияи омодаи роҳандозӣ барои веб ва мобилӣ барам, то тафаккури маҳсулот, дизайн, муҳандисӣ ва санҷиш дар як раванди ягона бошанд.",
@@ -737,7 +746,10 @@
     "concierge.send": "Омода кардани brief",
     "concierge.select": "Барои идома як интихобро муайян кунед.",
     "concierge.invalidEmail": "Email-и дуруст ворид кунед.",
-    "concierge.ready": "Brief-и лоиҳа омода шуд — барномаи email кушода мешавад.",
+    "concierge.ready": "Brief-и лоиҳа омода шуд.",
+    "concierge.sending": "Brief-и лоиҳа бо роҳи бехатар фиристода мешавад…",
+    "concierge.sent": "Brief фиристода шуд. Ба email-и воридкардаатон ҷавоб медиҳам.",
+    "concierge.sendError": "Хидмати форма дастнорас аст. Ҳамчун роҳи эҳтиётӣ draft-и email кушода мешавад…",
     "theme.toggle": "Гузариш байни мавзӯи равшан ва торик",
     "tech.system.title": "Frontend → Backend → Database → DevOps → AI.",
     "tech.system.intro": "Ман стекро ҳамчун як системаи ягонаи маҳсулот мебинам, на ҳамчун девори логотипҳо. Ҳар қабат вазифа, интерфейс ва сабаби худро дорад.",
@@ -918,8 +930,9 @@
     "contact.cta": "Связаться",
     "contact.quick": "Или напишите напрямую:",
     "contact.form.invalid": "Пожалуйста, введите корректный email.",
-    "contact.form.opening": "Открываю почтовое приложение…",
-    "contact.form.sent": "Спасибо! Сейчас откроется ваше почтовое приложение с готовым письмом.",
+    "contact.form.opening": "Безопасно отправляю ваше сообщение…",
+    "contact.form.sent": "Сообщение отправлено. Я отвечу на указанный вами email.",
+    "contact.form.sendError": "Сервис формы недоступен. В качестве резервного варианта откроется почтовое приложение…",
     "contact.label": "СТРОИМ ЗАВТРА ВМЕСТЕ",
     "contact.signature": "ТЕ ЖЕ ЛЮДИ.<br/>БОЛЕЕ СВЕТЛОЕ ЗАВТРА.",
     "contact.text": "Я открыт к новым возможностям, сотрудничеству и значимым проектам, которые создают ценность для людей и помогают строить более светлое будущее Таджикистана.",
@@ -1001,10 +1014,12 @@
     "notfound.cta.home": "На Главную",
     "notfound.cta.contact": "Связаться со Мной",
     "notfound.meta.title": "Страница не найдена — Наджибулло",
-    "status.city": "Душанбе",
+    "status.city": "Таджикистан",
     "a11y.backToTop": "Наверх",
     "toast.emailCopied": "Email скопирован",
-    "testimonials.label": "ОТЗЫВЫ КЛИЕНТОВ",
+    "testimonials.label": "ДОВЕРИЕ И ДОКАЗАТЕЛЬСТВА",
+    "testimonials.emptyTitle": "Только проверенные доказательства.",
+    "testimonials.emptyText": "Вымышленные отзывы не публикуются. Пока нет подтверждённых отзывов клиентов, доказательствами служат живые продукты, реальные экраны и профиль GitHub.",
     "testimonials.title": "Реальные отзывы.<br/>Реальное доверие.",
     "cv.download": "Скачать резюме",
     "hero.metric.age": "Основатель и разработчик",
@@ -1012,7 +1027,7 @@
     "hero.metric.platformSuffix": "+ MOBILE",
     "hero.metric.platforms": "Android • iOS • Web",
     "hero.metric.daysSuffix": " ДНЕЙ",
-    "hero.metric.delivery": "Выбранные MVP",
+    "hero.metric.delivery": "Небольшой scoped MVP / прототип",
     "cap.label": "ЧТО Я СОЗДАЮ",
     "cap.title": "Web. Android. iOS.<br/><span>Один стандарт продукта.</span>",
     "cap.intro": "Я могу провести продукт от идеи до готовой к запуску версии для веба и мобильных платформ, сохраняя продуктовый подход, дизайн, разработку и QA в одном процессе.",
@@ -1146,7 +1161,10 @@
     "concierge.send": "Подготовить brief",
     "concierge.select": "Выберите один вариант, чтобы продолжить.",
     "concierge.invalidEmail": "Введите корректный email.",
-    "concierge.ready": "Brief проекта готов — открываю почтовое приложение.",
+    "concierge.ready": "Brief проекта готов.",
+    "concierge.sending": "Отправляю brief проекта через защищённую форму…",
+    "concierge.sent": "Brief отправлен. Я отвечу на указанный вами email.",
+    "concierge.sendError": "Сервис формы недоступен. Открываю черновик email как запасной вариант…",
     "theme.toggle": "Переключить светлую или тёмную тему",
     "tech.system.title": "Frontend → Backend → Database → DevOps → AI.",
     "tech.system.intro": "Я рассматриваю стек как единую продуктовую систему, а не стену логотипов. У каждого слоя есть задача, интерфейс и причина существовать.",
@@ -1239,7 +1257,7 @@
     const node=[...el.childNodes].find(n=>n.nodeType===Node.TEXT_NODE && n.nodeValue.trim());
     if(node) node.nodeValue=value+' '; else el.insertBefore(document.createTextNode(value+' '),el.firstChild);
   };
-  const apply=(lang,{persist=true,announce=true}={})=>{
+  const apply=(lang,{persist=true,announce=true,updateUrl=persist}={})=>{
     if(!supported.includes(lang)) lang=defaultLang;
     current=lang;
     document.documentElement.lang=lang;
@@ -1255,13 +1273,31 @@
     qa('[data-i18n-src]').forEach(el=>{ const src=el.dataset['src'+lang.charAt(0).toUpperCase()+lang.slice(1)]; if(src && el.getAttribute('src')!==src) el.setAttribute('src',src); });
     qa('[data-lang]').forEach(btn=>{ const active=btn.dataset.lang===lang; btn.classList.toggle('active',active); btn.setAttribute('aria-pressed',String(active)); });
     if(persist){ try{localStorage.setItem('portfolio-language',lang)}catch{} }
+    if(updateUrl){
+      try{
+        const url=new URL(location.href);
+        url.searchParams.set('lang',lang);
+        history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+      }catch{}
+    }
+    try{
+      const base=(window.PORTFOLIO_CONFIG?.siteUrl||location.origin).replace(/\/$/,'');
+      const canonical=document.querySelector('link[rel="canonical"]');
+      if(canonical) canonical.setAttribute('href', lang===defaultLang ? `${base}/` : `${base}/?lang=${lang}`);
+      const ogUrl=document.querySelector('meta[property="og:url"]');
+      if(ogUrl) ogUrl.setAttribute('content', lang===defaultLang ? `${base}/` : `${base}/?lang=${lang}`);
+      const localeMap={en:'en_US',ru:'ru_RU',tg:'tg_TJ'};
+      const ogLocale=document.querySelector('meta[property="og:locale"]');
+      if(ogLocale) ogLocale.setAttribute('content', localeMap[lang]||'en_US');
+    }catch{}
     if(announce) document.dispatchEvent(new CustomEvent('portfolio:languagechange',{detail:{lang,t:(k)=>t(k,lang)}}));
   };
+  const urlLang=(()=>{try{return new URLSearchParams(location.search).get('lang')}catch{return null}})();
   const stored=(()=>{try{return localStorage.getItem('portfolio-language')}catch{return null}})();
-  const initial=supported.includes(stored)?stored:defaultLang;
+  const initial=supported.includes(urlLang)?urlLang:(supported.includes(stored)?stored:defaultLang);
   document.addEventListener('DOMContentLoaded',()=>{
     qa('[data-lang]').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.lang)));
-    apply(initial,{persist:false,announce:true});
+    apply(initial,{persist:false,announce:true,updateUrl:false});
   });
   window.PortfolioI18n={t,get current(){return current},setLang:apply,dictionaries,supported};
 })();
