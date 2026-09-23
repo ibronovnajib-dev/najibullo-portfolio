@@ -1,0 +1,30 @@
+{
+  "updated": "2026-09-22",
+  "policy": "Only source-verified facts are published. Usage counts remain null until verified analytics or database exports are supplied.",
+  "ustohona": {
+    "users": null,
+    "orders": null,
+    "masters": null,
+    "traffic": null,
+    "verifiedFacts": {
+      "coreAccess": "100% free",
+      "ratingScale": "1-5 stars",
+      "documentedMobileProofScreens": 4,
+      "directContact": true
+    }
+  },
+  "tajlife": {
+    "users": null,
+    "orders": null,
+    "traffic": null,
+    "verifiedFacts": {
+      "serviceAreas": 34,
+      "languages": [
+        "tg",
+        "ru",
+        "en"
+      ],
+      "structuredDiscovery": true
+    }
+  }
+}

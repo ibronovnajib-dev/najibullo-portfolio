@@ -1,0 +1,22 @@
+{
+  "name": "Najibullo — Full-Stack + Mobile Developer & Founder",
+  "short_name": "Najibullo",
+  "description": "Professional web platforms and Android/iOS applications — product strategy, design, engineering and launch from Tajikistan.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0a09",
+  "theme_color": "#0b0a09",
+  "lang": "tg",
+  "icons": [
+    {
+      "src": "./favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
