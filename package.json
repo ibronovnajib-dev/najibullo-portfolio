@@ -1,7 +1,7 @@
 {
   "name": "najibullo-portfolio",
   "private": true,
-  "version": "4.0.0",
+  "version": "5.2.0",
   "scripts": {
     "sync": "python3 sync_snapshots.py",
     "typecheck": "tsc -p tsconfig.json",

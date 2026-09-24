@@ -861,3 +861,182 @@ html[data-theme="light"] .testimonial-card--proof .testimonial-card__role a{colo
 @media (max-width:900px) and (orientation:landscape){
   .hero__media{height:70svh;max-height:390px}.hero__content{padding-top:18px!important}.hero-title{font-size:44px!important}.hero__metrics{grid-template-columns:repeat(4,1fr)!important}.hero__metrics>div{border-bottom:0!important}
 }
+/* ===== Cinematic Stage Director v1 =====
+   Five distinct section languages; GPU-first translate/scale/clip-path only. */
+:root{
+  --cine-ease:cubic-bezier(.16,1,.3,1);
+  --cine-ease-deep:cubic-bezier(.22,.61,.21,1);
+  --cine-gold:#e9bf7b;
+}
+
+.cinematic-stage{position:relative;isolation:isolate}
+.cinematic-stage::before,
+.cinematic-stage::after{pointer-events:none}
+
+/* Generic directional vocabulary. Individual transform properties avoid
+   fighting the legacy reveal system's transform declarations. */
+.cinematic-ready .cinematic-armed .cine-item{
+  --cine-x:0px;--cine-y:0px;--cine-scale:.985;--cine-rotate:0deg;
+  opacity:0;
+  translate:var(--cine-x) var(--cine-y);
+  scale:var(--cine-scale);
+  rotate:var(--cine-rotate);
+  filter:blur(8px) saturate(.92);
+  clip-path:inset(5% 4% 5% 4% round 4px);
+  transition:
+    translate .92s var(--cine-ease),
+    scale .95s var(--cine-ease),
+    rotate .95s var(--cine-ease),
+    opacity .7s ease,
+    filter .8s ease,
+    clip-path .95s var(--cine-ease);
+  transition-delay:calc(var(--cine-order,0) * 72ms + 40ms);
+  will-change:translate,opacity,filter,clip-path;
+}
+.cinematic-ready .cinematic-armed .cine-left{--cine-x:-72px;--cine-y:0px}
+.cinematic-ready .cinematic-armed .cine-right{--cine-x:72px;--cine-y:0px}
+.cinematic-ready .cinematic-armed .cine-up{--cine-x:0px;--cine-y:54px}
+.cinematic-ready .cinematic-armed .cine-down{--cine-x:0px;--cine-y:-46px}
+.cinematic-ready .cinematic-armed .cine-scale{--cine-scale:.84;--cine-rotate:-1.2deg}
+.cinematic-ready .cinematic-armed [data-cine-depth="headline"]{--cine-scale:.97;filter:blur(5px)}
+.cinematic-ready .cinematic-armed [data-cine-depth="image"]{--cine-scale:1.055;filter:blur(4px) brightness(.76)}
+.cinematic-ready .cinematic-armed [data-cine-depth="card"]{--cine-scale:.96;--cine-rotate:.6deg}
+.cinematic-ready .cinematic-stage.cinematic-in .cine-item{
+  opacity:1;
+  translate:0 0;
+  scale:1;
+  rotate:0deg;
+  filter:none;
+  clip-path:inset(0 round 0);
+}
+
+/* Stage chapter sweep: one quiet champagne beam per section. */
+.cinematic-ready .cinematic-stage:not(.cinematic-stage--enter)::after{
+  content:"";position:absolute;inset:0;z-index:6;pointer-events:none;
+  background:linear-gradient(106deg,transparent 30%,rgba(241,207,149,.10) 48%,rgba(241,207,149,.035) 55%,transparent 72%);
+  translate:-125% 0;opacity:0;
+}
+.cinematic-ready .cinematic-stage.cinematic-in:not(.cinematic-stage--enter)::after{
+  animation:cineSectionSweep 1.45s .08s var(--cine-ease-deep) both;
+}
+@keyframes cineSectionSweep{0%{translate:-125% 0;opacity:0}15%{opacity:.68}100%{translate:125% 0;opacity:0}}
+
+/* 01 ENTER — title sequence, portrait aperture, gold scan line. */
+.cinematic-stage--enter .hero__media{overflow:hidden}
+.cinematic-stage--enter .hero__media::after{
+  content:"";position:absolute;inset:0;z-index:9;pointer-events:none;
+  background:linear-gradient(90deg,#090806 0%,#0d0a07 42%,rgba(13,10,7,.94) 58%,transparent 82%);
+  transform-origin:right center;transform:scaleX(1);
+  animation:cineHeroAperture 1.2s .12s var(--cine-ease) forwards;
+}
+@keyframes cineHeroAperture{to{transform:scaleX(0)}}
+.cinematic-stage--enter .hero-title .line{overflow:hidden;display:block}
+.cinematic-stage--enter .hero-title .line em{display:inline-block;animation:cineHeroTitle .92s var(--cine-ease) both}
+.cinematic-stage--enter .hero-title .line:nth-child(1) em{animation-delay:.34s}
+.cinematic-stage--enter .hero-title .line:nth-child(2) em{animation-delay:.46s}
+.cinematic-stage--enter .hero-title .line:nth-child(3) em{animation-delay:.58s}
+@keyframes cineHeroTitle{from{translate:0 115%;filter:blur(8px)}to{translate:0 0;filter:none}}
+.cinematic-stage--enter.cinematic-in .cine-item{transition-delay:calc(var(--cine-order,0) * 62ms + 170ms)}
+.cinematic-stage--enter::after{
+  content:"";position:absolute;left:4%;right:4%;top:var(--nav-h,84px);height:1px;z-index:8;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#f1cf95 28%,rgba(241,207,149,.15) 72%,transparent);
+  transform:scaleX(0);transform-origin:left;animation:cineHeroScan 1.45s .65s var(--cine-ease) forwards;opacity:.6
+}
+@keyframes cineHeroScan{to{transform:scaleX(1);opacity:0}}
+
+/* 02 IDENTITY — editorial frame opens around portrait and capability system. */
+.cinematic-stage--identity::before{
+  content:"";position:absolute;z-index:0;left:3.2%;top:8%;width:1px;height:0;
+  background:linear-gradient(#edc98f,rgba(237,201,143,.08),transparent);
+  opacity:.52;transition:height 1.2s .18s var(--cine-ease)
+}
+.cinematic-stage--identity.cinematic-in::before{height:68%}
+.cinematic-stage--identity .about-portrait::after,
+.cinematic-stage--identity .capability-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border:1px solid rgba(235,195,130,.0);transition:border-color .9s .45s ease
+}
+.cinematic-stage--identity.cinematic-in .about-portrait::after,
+.cinematic-stage--identity.cinematic-in .capability-card::after{border-color:rgba(235,195,130,.16)}
+
+/* 03 PRODUCTS — cinematic split screen / proof cards. */
+.cinematic-stage--products .project-card[data-cine-order="2"]{transform-origin:left center}
+.cinematic-stage--products .project-card[data-cine-order="3"]{transform-origin:right center}
+.cinematic-stage--products .project-visual{overflow:hidden}
+.cinematic-stage--products .project-visual::after,
+.cinematic-stage--products .proof-card::after,
+.cinematic-stage--products .demo-stage::after{
+  content:"";position:absolute;inset:0;z-index:8;pointer-events:none;
+  background:linear-gradient(105deg,transparent 18%,rgba(238,201,141,.18) 48%,transparent 78%);
+  translate:-130% 0;opacity:0
+}
+.cinematic-stage--products.cinematic-in .project-visual::after,
+.cinematic-stage--products.cinematic-in .proof-card::after,
+.cinematic-stage--products.cinematic-in .demo-stage::after{
+  animation:cineCardLight 1.15s calc(var(--cine-order,2) * 75ms + .42s) var(--cine-ease) both
+}
+@keyframes cineCardLight{20%{opacity:.72}100%{translate:130% 0;opacity:0}}
+.cinematic-stage--products.cinematic-in .project-no{animation:cineNumberStamp .7s .55s var(--cine-ease) both}
+@keyframes cineNumberStamp{from{letter-spacing:.45em;opacity:0}to{letter-spacing:normal;opacity:1}}
+
+/* 04 PROCESS — sequential line grows through the architecture. */
+.cinematic-stage--process{--cine-line:0%}
+.cinematic-stage--process .process-grid::before,
+.cinematic-stage--process .system-map__track::before{
+  content:"";position:absolute;z-index:0;pointer-events:none;background:linear-gradient(90deg,#a66b30,#f0cf95,rgba(240,207,149,.12));
+  transform-origin:left;transform:scaleX(0);transition:transform 1.35s .22s var(--cine-ease)
+}
+.cinematic-stage--process .process-grid::before{left:0;right:0;top:0;height:1px}
+.cinematic-stage--process .system-map__track{position:relative}
+.cinematic-stage--process .system-map__track::before{left:4%;right:4%;top:50%;height:1px}
+.cinematic-stage--process.cinematic-in .process-grid::before,
+.cinematic-stage--process.cinematic-in .system-map__track::before{transform:scaleX(1)}
+.cinematic-stage--process.cinematic-in .step-icon,
+.cinematic-stage--process.cinematic-in .system-node>span{animation:cineStepPulse .7s calc(var(--cine-order,2) * 70ms + .45s) var(--cine-ease) both}
+@keyframes cineStepPulse{0%{filter:drop-shadow(0 0 0 rgba(240,207,149,0));scale:.72}55%{filter:drop-shadow(0 0 18px rgba(240,207,149,.42));scale:1.08}100%{filter:none;scale:1}}
+
+/* 05 CONTACT — final invitation, focus cone and form reveal. */
+.cinematic-stage--contact::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(540px circle at 78% 44%,rgba(233,187,117,.15),transparent 67%);
+  opacity:0;scale:.82;transition:opacity 1.1s .2s ease,scale 1.4s .2s var(--cine-ease)
+}
+.cinematic-stage--contact.cinematic-in::before{opacity:1;scale:1}
+.cinematic-stage--contact.cinematic-in .contact-form{animation:cineContactFrame .95s .28s var(--cine-ease) both}
+@keyframes cineContactFrame{from{box-shadow:0 0 0 rgba(0,0,0,0);border-color:rgba(240,207,149,.08)}to{box-shadow:0 28px 90px rgba(0,0,0,.22);border-color:rgba(240,207,149,.34)}}
+.cinematic-stage--contact.cinematic-in .contact-form__bottom .pill{animation:cineFinalCTA 1.25s 1.05s ease-out both}
+@keyframes cineFinalCTA{0%{box-shadow:0 0 0 rgba(224,174,101,0)}45%{box-shadow:0 0 32px rgba(224,174,101,.28)}100%{box-shadow:0 0 0 rgba(224,174,101,0)}}
+
+/* Desktop-only sophistication: deeper trajectories and perspective. */
+@media(min-width:901px) and (hover:hover) and (pointer:fine){
+  .cinematic-ready .cinematic-armed [data-cine-depth="card"]{perspective:1200px}
+  .cinematic-stage--products.cinematic-in .project-card:nth-child(1){animation:cineCardSettleL 1.08s .22s var(--cine-ease) both}
+  .cinematic-stage--products.cinematic-in .project-card:nth-child(2){animation:cineCardSettleR 1.08s .3s var(--cine-ease) both}
+  @keyframes cineCardSettleL{from{rotate:0 -5deg 0}to{rotate:0 0deg 0}}
+  @keyframes cineCardSettleR{from{rotate:0 5deg 0}to{rotate:0 0deg 0}}
+}
+
+/* Mobile is intentionally lighter: no blur, shorter distance, no sweeping layer
+   over content. This preserves the premium rhythm without jank or obscuring text. */
+@media(max-width:760px){
+  .cinematic-ready .cinematic-armed .cine-item{
+    --cine-x:0px;--cine-y:26px;--cine-scale:.99;--cine-rotate:0deg;
+    filter:none;clip-path:inset(2% 0 2% 0 round 2px);
+    transition-duration:.62s,.62s,.62s,.5s,.01s,.62s;
+    transition-delay:calc(var(--cine-order,0) * 38ms + 20ms);
+  }
+  .cinematic-ready .cinematic-armed .cine-left{--cine-x:-24px;--cine-y:10px}
+  .cinematic-ready .cinematic-armed .cine-right{--cine-x:24px;--cine-y:10px}
+  .cinematic-ready .cinematic-armed .cine-up{--cine-y:28px}
+  .cinematic-ready .cinematic-armed .cine-down{--cine-y:-22px}
+  .cinematic-stage:not(.cinematic-stage--enter)::after{display:none}
+  .cinematic-stage--enter .hero__media::after{animation-duration:.82s}
+  .cinematic-stage--identity::before{left:16px;opacity:.28}
+  .cinematic-stage--process .system-map__track::before{display:none}
+  .cinematic-stage--contact::before{background:radial-gradient(320px circle at 50% 25%,rgba(233,187,117,.10),transparent 70%)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .cinematic-stage::before,.cinematic-stage::after,.project-visual::after,.proof-card::after,.demo-stage::after{animation:none!important;transition:none!important}
+  .cine-item{opacity:1!important;translate:none!important;scale:1!important;rotate:0deg!important;filter:none!important;clip-path:none!important;transition:none!important;animation:none!important}
+  .cinematic-stage--enter .hero__media::after{display:none!important}
+}

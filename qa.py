@@ -104,6 +104,11 @@ root_js=read('script.js')
 ok("setAttribute('inert','')" in root_js and "removeAttribute('inert')" in root_js,'modal/menu inert management')
 ok("duration = 560" in root_js and "portfolio-seen" in root_js,'short returning-aware preloader')
 ok('Small scoped MVP / prototype' in read('i18n.js'),'scoped 3–7 day claim')
+# cinematic five-stage direction
+ok('Cinematic Stage Director v1' in css,'cinematic stage CSS')
+ok('cinematic-stage--enter' in root_js and 'portfolio:cinematicstage' in root_js,'cinematic stage JS')
+ok(all(token in root_js for token in ["'identity'","'products'","'process'","'contact'"]),'five cinematic groups')
+ok('@media(max-width:760px)' in css and 'prefers-reduced-motion:reduce' in css,'cinematic mobile/reduced-motion guards')
 try:
     testimonials=json.loads((TARGET/'assets/testimonials.json').read_text(encoding='utf-8'))
     verified=testimonials.get('verified',[]) if isinstance(testimonials,dict) else []

@@ -1,4 +1,4 @@
-# Najibullo Portfolio — Production v4
+# Najibullo Portfolio — Cinematic Production v5.2
 
 Current production URL: https://najibullo-portfolio.onrender.com
 
@@ -71,3 +71,7 @@ Central collection is deliberately disabled until a real GA4 ID, Cloudflare Web 
 - Telegram stays hidden until a verified profile URL is supplied.
 - Testimonials are never invented; without authorized client quotes, the site shows a verified-proof card instead.
 - Unverified user/order/traffic counts remain unpublished.
+
+## Cinematic five-stage motion
+
+The portfolio now uses a dedicated stage director in `src/js/15-cinematic-stages.js` and `src/styles/10-cinematic-stages.css`. It groups the experience into five motion chapters: Enter, Identity, Products/Proof, Process/System, and Contact. Desktop uses deeper directional choreography; phones use shorter transform distances and no heavy sweep overlays. `prefers-reduced-motion` disables cinematic movement.
