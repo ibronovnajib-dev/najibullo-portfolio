@@ -35,6 +35,18 @@
 .cinematic-ready .cinematic-armed .cine-up{--cine-x:0px;--cine-y:54px}
 .cinematic-ready .cinematic-armed .cine-down{--cine-x:0px;--cine-y:-46px}
 .cinematic-ready .cinematic-armed .cine-scale{--cine-scale:.84;--cine-rotate:-1.2deg}
+
+/* Bidirectional replay vocabulary. Scrolling down keeps the original
+   trajectories; scrolling back up mirrors the vertical energy and adds a
+   restrained diagonal component to horizontal entrances. */
+.cinematic-ready .cinematic-enter-down .cine-up{--cine-y:54px}
+.cinematic-ready .cinematic-enter-down .cine-down{--cine-y:-46px}
+.cinematic-ready .cinematic-enter-down .cine-scale{--cine-y:26px}
+.cinematic-ready .cinematic-enter-up .cine-up{--cine-y:-54px}
+.cinematic-ready .cinematic-enter-up .cine-down{--cine-y:46px}
+.cinematic-ready .cinematic-enter-up .cine-left{--cine-x:-64px;--cine-y:-12px}
+.cinematic-ready .cinematic-enter-up .cine-right{--cine-x:64px;--cine-y:-12px}
+.cinematic-ready .cinematic-enter-up .cine-scale{--cine-y:-26px}
 .cinematic-ready .cinematic-armed [data-cine-depth="headline"]{--cine-scale:.97;filter:blur(5px)}
 .cinematic-ready .cinematic-armed [data-cine-depth="image"]{--cine-scale:1.055;filter:blur(4px) brightness(.76)}
 .cinematic-ready .cinematic-armed [data-cine-depth="card"]{--cine-scale:.96;--cine-rotate:.6deg}
@@ -47,6 +59,11 @@
   clip-path:inset(0 round 0);
 }
 
+/* Release compositor hints after the entrance finishes. This keeps the replay
+   smooth without pinning dozens of layers in GPU memory for the whole page. */
+.cinematic-ready .cinematic-stage.cinematic-settled .cine-item{will-change:auto}
+.cinematic-ready .cinematic-armed .cine-item{backface-visibility:hidden}
+
 /* Stage chapter sweep: one quiet champagne beam per section. */
 .cinematic-ready .cinematic-stage:not(.cinematic-stage--enter)::after{
   content:"";position:absolute;inset:0;z-index:6;pointer-events:none;
@@ -57,6 +74,8 @@
   animation:cineSectionSweep 1.45s .08s var(--cine-ease-deep) both;
 }
 @keyframes cineSectionSweep{0%{translate:-125% 0;opacity:0}15%{opacity:.68}100%{translate:125% 0;opacity:0}}
+@keyframes cineSectionSweepReverse{0%{translate:125% 0;opacity:0}15%{opacity:.68}100%{translate:-125% 0;opacity:0}}
+.cinematic-ready .cinematic-stage.cinematic-enter-up.cinematic-in:not(.cinematic-stage--enter)::after{animation-name:cineSectionSweepReverse}
 
 /* 01 ENTER — title sequence, portrait aperture, gold scan line. */
 .cinematic-stage--enter .hero__media{overflow:hidden}
@@ -112,6 +131,13 @@
   animation:cineCardLight 1.15s calc(var(--cine-order,2) * 75ms + .42s) var(--cine-ease) both
 }
 @keyframes cineCardLight{20%{opacity:.72}100%{translate:130% 0;opacity:0}}
+@keyframes cineCardLightReverse{0%{translate:130% 0;opacity:0}20%{opacity:.72}100%{translate:-130% 0;opacity:0}}
+.cinematic-stage--products.cinematic-enter-up .project-visual::after,
+.cinematic-stage--products.cinematic-enter-up .proof-card::after,
+.cinematic-stage--products.cinematic-enter-up .demo-stage::after{translate:130% 0}
+.cinematic-stage--products.cinematic-enter-up.cinematic-in .project-visual::after,
+.cinematic-stage--products.cinematic-enter-up.cinematic-in .proof-card::after,
+.cinematic-stage--products.cinematic-enter-up.cinematic-in .demo-stage::after{animation-name:cineCardLightReverse}
 .cinematic-stage--products.cinematic-in .project-no{animation:cineNumberStamp .7s .55s var(--cine-ease) both}
 @keyframes cineNumberStamp{from{letter-spacing:.45em;opacity:0}to{letter-spacing:normal;opacity:1}}
 
@@ -127,6 +153,8 @@
 .cinematic-stage--process .system-map__track::before{left:4%;right:4%;top:50%;height:1px}
 .cinematic-stage--process.cinematic-in .process-grid::before,
 .cinematic-stage--process.cinematic-in .system-map__track::before{transform:scaleX(1)}
+.cinematic-stage--process.cinematic-enter-up .process-grid::before,
+.cinematic-stage--process.cinematic-enter-up .system-map__track::before{transform-origin:right}
 .cinematic-stage--process.cinematic-in .step-icon,
 .cinematic-stage--process.cinematic-in .system-node>span{animation:cineStepPulse .7s calc(var(--cine-order,2) * 70ms + .45s) var(--cine-ease) both}
 @keyframes cineStepPulse{0%{filter:drop-shadow(0 0 0 rgba(240,207,149,0));scale:.72}55%{filter:drop-shadow(0 0 18px rgba(240,207,149,.42));scale:1.08}100%{filter:none;scale:1}}
@@ -165,6 +193,13 @@
   .cinematic-ready .cinematic-armed .cine-right{--cine-x:24px;--cine-y:10px}
   .cinematic-ready .cinematic-armed .cine-up{--cine-y:28px}
   .cinematic-ready .cinematic-armed .cine-down{--cine-y:-22px}
+  .cinematic-ready .cinematic-enter-up .cine-up{--cine-y:-22px}
+  .cinematic-ready .cinematic-enter-up .cine-down{--cine-y:22px}
+  .cinematic-ready .cinematic-enter-up .cine-left{--cine-x:-18px;--cine-y:-8px}
+  .cinematic-ready .cinematic-enter-up .cine-right{--cine-x:18px;--cine-y:-8px}
+  .cinematic-ready .cinematic-enter-up .cine-scale{--cine-y:-14px}
+  .cinematic-ready .cinematic-enter-down .cine-scale{--cine-y:14px}
+  .cinematic-ready .cinematic-armed .cine-item{clip-path:none}
   .cinematic-stage:not(.cinematic-stage--enter)::after{display:none}
   .cinematic-stage--enter .hero__media::after{animation-duration:.82s}
   .cinematic-stage--identity::before{left:16px;opacity:.28}
