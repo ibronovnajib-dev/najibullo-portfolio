@@ -142,17 +142,69 @@
     return;
   }
 
+    let lastScrollY = window.scrollY || 0;
+  let scrollDir = 'down';
+  let scrollTick = 0;
+
+  const updateScrollDir = () => {
+    scrollTick = 0;
+    const y = window.scrollY || window.pageYOffset || 0;
+    if (y > lastScrollY) scrollDir = 'down';
+    else if (y < lastScrollY) scrollDir = 'up';
+    lastScrollY = y;
+  };
+
+  const handleScrollDir = () => {
+    if (!scrollTick) scrollTick = requestAnimationFrame(updateScrollDir);
+  };
+
+  addEventListener('scroll', handleScrollDir, { passive: true });
+
+  const primeSection = (section, dir = 'down') => {
+    section.classList.remove('cinematic-enter-up', 'cinematic-enter-down');
+    section.classList.add(dir === 'up' ? 'cinematic-enter-up' : 'cinematic-enter-down');
+  };
+
+  const resetSection = (section, dir = 'down') => {
+    section.classList.remove('cinematic-in');
+    primeSection(section, dir);
+  };
+
+  qa('.cinematic-stage:not(.cinematic-stage--enter)').forEach(section => {
+    primeSection(section, 'down');
+  });
+
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
       const section = /** @type {HTMLElement} */ (entry.target);
-      section.classList.add('cinematic-in');
-      section.dispatchEvent(new CustomEvent('portfolio:cinematicstage', {bubbles:true, detail:{stage:section.dataset.cinematicStage || 'section'}}));
-      observer.unobserve(section);
+
+      if (entry.isIntersecting) {
+        primeSection(section, scrollDir);
+
+        requestAnimationFrame(() => {
+          section.classList.add('cinematic-in');
+        });
+
+        section.dispatchEvent(new CustomEvent('portfolio:cinematicstage', {
+          bubbles: true,
+          detail: {
+            stage: section.dataset.cinematicStage || 'section',
+            direction: scrollDir
+          }
+        }));
+        continue;
+      }
+
+      const outAbove = entry.boundingClientRect.bottom < -innerHeight * 0.08;
+      const outBelow = entry.boundingClientRect.top > innerHeight * 1.08;
+
+      if (outAbove || outBelow) {
+        resetSection(section, outAbove ? 'up' : 'down');
+      }
     }
   }, {
-    threshold: mobile ? 0.08 : 0.14,
-    rootMargin: mobile ? '0px 0px -5% 0px' : '0px 0px -10% 0px'
+    threshold: mobile ? [0, 0.08, 0.18] : [0, 0.12, 0.24],
+    rootMargin: mobile ? '0px 0px -3% 0px' : '0px 0px -8% 0px'
   });
 
   qa('.cinematic-stage:not(.cinematic-stage--enter)').forEach(section => observer.observe(section));
